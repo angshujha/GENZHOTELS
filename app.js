@@ -10,7 +10,7 @@ const ExpressError = require('./utils/ExpressError.js');
 app.engine('ejs', ejsmate);
 app.use(overwride('_method'));
 const path = require('path');
-const e = require('express');
+const { listingSchema } = require('./schema.js');
 
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
@@ -30,49 +30,57 @@ app.get('/', (req, res) => {
   res.send('Welcome to GENZ HOTELS!');
 });
 //index route to display all listings
-app.get('/listings', async (req, res) => {
+app.get('/listings', wrapAsync(async (req, res) => {
   const listings = await Listing.find({});
   res.render('listings/index.ejs', { listings });
-});
+}));
 //new route to display form to create a new listing
 app.get('/listings/new', (req, res) => {
   res.render('listings/new.ejs');
 });
 //show route to display a single listing
-app.get('/listings/:id', async (req, res) => {
+app.get('/listings/:id', wrapAsync(async (req, res) => {
   const { id } = req.params;
   const listing = await Listing.findById(id);
   res.render('listings/show.ejs', { listing });
-});
+}));
 //  create route to add a new listing
 app.post('/listings', wrapAsync(async (req, res) => {
+  const { error } = listingSchema.validate(req.body);
+  if (error) throw new ExpressError(400, error.details[0].message);
   const newListing = new Listing(req.body);
+  
+  
   await newListing.save();
   res.redirect('/listings');
 }));
 //edit route to display form to edit a listing
-app.get('/listings/:id/edit', async (req, res) => {
+app.get('/listings/:id/edit', wrapAsync(async (req, res) => {
   const { id } = req.params;
   const listing = await Listing.findById(id);
   res.render('listings/edit.ejs', { listing });
-});
+}));
 
 //update route to update a listing
-app.put('/listings/:id', async (req, res) => {
+app.put('/listings/:id', wrapAsync(async (req, res) => {
   const { id } = req.params;
   await Listing.findByIdAndUpdate(id, { ...req.body.listing }, { runValidators: true, new: true });
   res.redirect(`/listings/${id}`);
-});
+}));
 //delete route to delete a listing
-app.delete('/listings/:id', async (req, res) => {
+app.delete('/listings/:id', wrapAsync(async (req, res) => {
   const { id } = req.params;
   let deletedListing = await Listing.findByIdAndDelete(id);
   console.log(deletedListing);
   res.redirect('/listings');
+}));
+app.all(/.*/, (req, res, next) => {
+  next(new ExpressError(404,'Page Not Found'));
 });
+
 app.use((err, req, res, next) => {
   const { status = 500, message = 'Something went wrong' } = err;
-  res.status(status).send(message);
+  res.render('error.ejs', { status, message });
 });
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);

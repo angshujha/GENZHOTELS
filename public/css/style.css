@@ -93,3 +93,12 @@
     border-radius: 1rem !important;
     margin-bottom: 2rem !important;
 }
+.about{
+    margin-bottom: 2rem;
+    padding: 1rem;
+    display: flex;
+    flex-direction: row;
+    gap: 2rem;
+    justify-content: center;
+    align-items: center;
+}
