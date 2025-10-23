@@ -2,13 +2,13 @@
 <body>
     <div class="row">
         <div class="col-md-8 offset-md-2">
-            <h3>listing details:</h3>
+            <h3><%= listing.title %></h3>
         </div>
     
-    <div class="card col-6 offset-md-2">
+    <div class="card listing-card col-6 offset-md-2">
         <img src="<%= listing.image.url %>" class="card-img-top show-img" alt="<%= listing.title %>">
   <div class="card-body">
-    <h5 class="card-title"><%= listing.title %></h5>
+    
     <p class="card-text"><%= listing.description %></p>
     <p class="text-muted">
   Rs <%= listing.price ? listing.price.toLocaleString("en-IN") : "N/A" %>/night
@@ -27,10 +27,59 @@
     <form action="/listings/<%= listing._id %>?_method=DELETE" method="post">
         <button type="submit" class="add-btn">Delete Listing</button>
     </form>
-   </div>
     </div>
-    
-    
-    
+    <div class="col-md-8 offset-md-2 mt-4 mb-4">
+        <hr>
+        <h4>leave a review:</h4>
+        <form action="/listings/<%= listing._id %>/reviews" novalidate class="needs-validation" method="post">
+            <div class="form-group">
+                <label for="comment">Comment:</label>
+                <textarea id="comment" name="review[comment]" class="form-control" required></textarea>
+                <div class="invalid-feedback">Please provide a comment.</div>
+            </div>
+            <div class="valid-feedback">Looks good!</div>
+            <div class="form-group">
+                <label for="rating">Rating:</label>
+                <select id="rating" name="review[rating]" class="form-control" required>
+                    <option value="">Select a rating</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                </select>
+                <div class="invalid-feedback">Please provide a rating.</div>
+            </div>
+            <div class="valid-feedback">Looks good!</div>
+            <br>
+            <button type="submit" class="add-btn">Submit Review</button>
+        </form>
+        <hr>
+        <h4>Reviews:</h4>
+        <div>
+            <% if (listing.reviews.length === 0) { %>
+                <p>No reviews yet.</p>
+            <% } else { %>
+                <div class="row col-5 reviewbox ms-3 mb-3 g-2 ">
+                
+                <% listing.reviews.forEach(function(review) { %>
+                    <div class="mb-3 card p-3">
+                        <div class="card-text">
+                            <strong>Rating:</strong> <%= review.rating %>/5
+                            <p><%= review.comment %></p>
+                        </div>
+                        <form action="/listings/<%= listing._id %>/reviews/<%= review._id %>?_method=DELETE" class="mb-3" method="post">
+                            <button type="submit" class="btn btn-danger btn-sm">Delete Review</button>
+                        </form>
+                    </div>
+            
+                <% }); %>
+                </div>
+            <% } %>
+        </div>
+    </div>
+</div>
+
 </body>
 </html>
+    

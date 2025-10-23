@@ -3,6 +3,7 @@ const app = express();
 const port = 8080;
 const mongoose = require('mongoose');
 const Listing = require('./models/listing');
+const Review = require('./models/review');
 const overwride = require('method-override');
 const ejsmate = require('ejs-mate');
 const wrapAsync = require('./utils/wrapAsync.js');
@@ -10,7 +11,7 @@ const ExpressError = require('./utils/ExpressError.js');
 app.engine('ejs', ejsmate);
 app.use(overwride('_method'));
 const path = require('path');
-const { listingSchema } = require('./schema.js');
+const { listingSchema,reviewSchema } = require('./schema.js');
 
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
@@ -29,8 +30,18 @@ async function main() {
 app.get('/', (req, res) => {
   res.send('Welcome to GENZ HOTELS!');
 });
+const validateschema = (req, res, next) => {
+  const { error } = listingSchema.validate(req.body);
+  if (error) throw new ExpressError(400, error.details[0].message);
+  next();
+};
+const validatereview = (req, res, next) => {
+  const { error } = reviewSchema.validate(req.body);
+  if (error) throw new ExpressError(400, error.details[0].message);
+  next();
+};
 //index route to display all listings
-app.get('/listings', wrapAsync(async (req, res) => {
+app.get('/listings',validateschema, wrapAsync(async (req, res) => {
   const listings = await Listing.find({});
   res.render('listings/index.ejs', { listings });
 }));
@@ -41,13 +52,12 @@ app.get('/listings/new', (req, res) => {
 //show route to display a single listing
 app.get('/listings/:id', wrapAsync(async (req, res) => {
   const { id } = req.params;
-  const listing = await Listing.findById(id);
+  const listing = await Listing.findById(id).populate('reviews');
   res.render('listings/show.ejs', { listing });
 }));
 //  create route to add a new listing
-app.post('/listings', wrapAsync(async (req, res) => {
-  const { error } = listingSchema.validate(req.body);
-  if (error) throw new ExpressError(400, error.details[0].message);
+app.post('/listings', validateschema, wrapAsync(async (req, res) => {
+  
   const newListing = new Listing(req.body);
   
   
@@ -62,7 +72,7 @@ app.get('/listings/:id/edit', wrapAsync(async (req, res) => {
 }));
 
 //update route to update a listing
-app.put('/listings/:id', wrapAsync(async (req, res) => {
+app.put('/listings/:id',validateschema, wrapAsync(async (req, res) => {
   const { id } = req.params;
   await Listing.findByIdAndUpdate(id, { ...req.body.listing }, { runValidators: true, new: true });
   res.redirect(`/listings/${id}`);
@@ -74,6 +84,26 @@ app.delete('/listings/:id', wrapAsync(async (req, res) => {
   console.log(deletedListing);
   res.redirect('/listings');
 }));
+//review create route
+app.post('/listings/:id/reviews', validatereview, wrapAsync(async (req, res) => {
+  const { id } = req.params;
+  const listing = await Listing.findById(id);
+  const review = req.body.review;
+  const newReview = new Review(review);
+  listing.reviews.push(newReview);
+  await newReview.save();
+  await listing.save();
+  res.redirect(`/listings/${id}`);
+}));
+//review delete route
+app.delete('/listings/:id/reviews/:reviewId', wrapAsync(async (req, res) => {
+  const { id, reviewId } = req.params;
+  await Listing.findByIdAndUpdate(id, { $pull: { reviews: reviewId } });
+  await Review.findByIdAndDelete(reviewId);
+
+  res.redirect(`/listings/${id}`);
+}));
+
 app.all(/.*/, (req, res, next) => {
   next(new ExpressError(404,'Page Not Found'));
 });

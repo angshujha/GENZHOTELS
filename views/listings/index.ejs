@@ -6,7 +6,7 @@
     <% listings.forEach(listing => { %>
       <a href="/listings/<%= listing._id %>" class="anchor">
       <div class="col">
-        <div class="card h-100">
+        <div class="card listing-card h-100">
           <img src="<%= listing.image.url %>" class="card-img-top" alt="<%= listing.title %>">
           <div class="card-img-overlay"></div>
           <div class="card-body">
