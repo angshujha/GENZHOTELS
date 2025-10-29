@@ -1,7 +1,7 @@
 const Listing = require('./models/listing.js');
  const Review = require('./models/review.js');
 const ExpressError = require('./utils/ExpressError');
-const { listingSchema } = require('./schema.js');
+const { listingSchema,reviewSchema } = require('./schema.js');
 module.exports.isLoggedIn = (req, res, next) => {
   if (!req.isAuthenticated()) {
     req.session.redirecturl = req.originalUrl;
@@ -72,5 +72,10 @@ module.exports.isAuthor = async (req, res, next) => {
   }
 
   // ✅ Everything ok → move to next middleware
+  next();
+};
+module.exports.validatereview = (req, res, next) => {
+  const { error } = reviewSchema.validate(req.body);
+  if (error) throw new ExpressError(400, error.details[0].message);
   next();
 };
