@@ -8,6 +8,7 @@
     <div class="card listing-card col-6 offset-md-2">
         <img src="<%= listing.image.url %>" class="card-img-top show-img" alt="<%= listing.title %>">
   <div class="card-body">
+    <p class="card-text">Hosted by: <%= listing.owner ? listing.owner.username : "Unknown" %></p>
     
     <p class="card-text"><%= listing.description %></p>
     <p class="text-muted">
@@ -19,7 +20,7 @@
   </div>
     </div>
    <br> 
-    
+   
    <div class="btns col-md-8 offset-md-2 d-flex gap-3">
     <form action="/listings/<%= listing._id %>/edit" method="get">
         <button type="submit" class="add-btn">Edit Listing</button>
@@ -28,6 +29,7 @@
         <button type="submit" class="add-btn">Delete Listing</button>
     </form>
     </div>
+    
     <div class="col-md-8 offset-md-2 mt-4 mb-4">
         <hr>
         <h4>leave a review:</h4>
@@ -64,6 +66,9 @@
                 
                 <% listing.reviews.forEach(function(review) { %>
                     <div class="mb-3 card p-3">
+                        <div class="card-header">
+                            <strong>By:</strong> <%= review.author ? review.author.username : "Unknown" %>
+                        </div>
                         <div class="card-text">
                             <strong>Rating:</strong> <%= review.rating %>/5
                             <p><%= review.comment %></p>

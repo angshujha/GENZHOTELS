@@ -2,15 +2,12 @@ const express = require('express');
 const router = express.Router();
 const Listing = require('../models/listing');
 const wrapAsync = require('../utils/wrapAsync.js');
-const { listingSchema } = require('../schema.js');
-const ExpressError = require('../utils/ExpressError.js');
 
-// ✅ Validation middleware
-const validateschema = (req, res, next) => {
-  const { error } = listingSchema.validate(req.body);
-  if (error) throw new ExpressError(400, error.details[0].message);
-  next();
-};
+
+const { isLoggedIn, isOwner,validateschema } = require('../middleware.js');
+
+
+
 
 // ✅ INDEX - display all listings (no validation here)
 router.get('/', wrapAsync(async (req, res) => {
@@ -19,27 +16,30 @@ router.get('/', wrapAsync(async (req, res) => {
 }));
 
 // ✅ NEW - show form
-router.get('/new', (req, res) => {
+router.get('/new', isLoggedIn, (req, res) => {
   res.render('listings/new.ejs');
 });
 
 // ✅ SHOW - single listing
 router.get('/:id', wrapAsync(async (req, res) => {
   const { id } = req.params;
-  const listing = await Listing.findById(id).populate('reviews');
+  const listing = await Listing.findById(id).populate({ path: 'reviews', populate: { path: 'author' } }).populate('owner');
+  console.log(listing);
   res.render('listings/show.ejs', { listing });
 }));
 
 // CREATE
-router.post('/', validateschema, wrapAsync(async (req, res) => {
+router.post('/', isLoggedIn, validateschema, wrapAsync(async (req, res) => {
   const newListing = new Listing(req.body.listing);
+  console.log(req.user);
+  newListing.owner = req.user._id; // Set the owner to the logged-in user
   await newListing.save();
   req.flash('success', 'Successfully created a new listing!');
   res.redirect('/listings');
 }));
 
 // ✅ EDIT - show edit form
-router.get('/:id/edit', wrapAsync(async (req, res) => {
+router.get('/:id/edit', isLoggedIn, isOwner, wrapAsync(async (req, res) => {
   const { id } = req.params;
   const listing = await Listing.findById(id);
   res.render('listings/edit.ejs', { listing });
@@ -47,14 +47,16 @@ router.get('/:id/edit', wrapAsync(async (req, res) => {
 
 // ✅ UPDATE
 
-router.put('/:id', validateschema, wrapAsync(async (req, res) => {
+router.put('/:id', isLoggedIn, isOwner, validateschema, wrapAsync(async (req, res) => {
   const { id } = req.params;
+  const listing = await Listing.findById(id);
+  
   await Listing.findByIdAndUpdate(id, req.body.listing, { runValidators: true, new: true });
   res.redirect(`/listings/${id}`);
 }));
 
 // ✅ DELETE
-router.delete('/:id', wrapAsync(async (req, res) => {
+router.delete('/:id', isLoggedIn, isOwner, wrapAsync(async (req, res) => {
   const { id } = req.params;
   await Listing.findByIdAndDelete(id);
   res.redirect('/listings');
