@@ -8,14 +8,28 @@ const listingSchema = new schema({
   price: Number,
   description: String,
   image: {
-    filename: String,
     url: String,
+    filename: String
   },
   country: String,
   
   owner : {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
+  },
+  category: {
+    type: String,
+    enum: [
+      "Trending",
+      "Outdoor getaways",
+      "City stays",
+      "Cabins and cottages",
+      "Unique stays",
+      "Windmills",
+      "Amazing pools",
+      "Arctic homes"
+    ],
+    required: true
   },
 
   reviews: [

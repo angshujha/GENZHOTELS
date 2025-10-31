@@ -40,19 +40,30 @@
                 <div class="invalid-feedback">Please provide a comment.</div>
             </div>
             <div class="valid-feedback">Looks good!</div>
-            <div class="form-group">
+           
+
+            <br>
+             <div class="form-group">
                 <label for="rating">Rating:</label>
-                <select id="rating" name="review[rating]" class="form-control" required>
-                    <option value="">Select a rating</option>
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
-                    <option value="5">5</option>
-                </select>
-                <div class="invalid-feedback">Please provide a rating.</div>
-            </div>
-            <div class="valid-feedback">Looks good!</div>
+            <fieldset class="starability-slot">
+                
+                 
+                <input type="radio" id="no-rate" class="input-no-rate" name="review[rating]" value="1" checked aria-label="No rating." />
+                 <input type="radio" id="first-rate1" name="review[rating]" value="1" />
+                 <label for="first-rate1" title="Terrible">1 star</label>
+                 <input type="radio" id="first-rate2" name="review[rating]" value="2" />
+                 <label for="first-rate2" title="Not good">2 stars</label>
+                 <input type="radio" id="first-rate3" name="review[rating]" value="3" />
+                 <label for="first-rate3" title="Average">3 stars</label>
+                 <input type="radio" id="first-rate4" name="review[rating]" value="4" />
+                  <label for="first-rate4" title="Very good">4 stars</label>
+                  <input type="radio" id="first-rate5" name="review[rating]" value="5" />
+                  <label for="first-rate5" title="Amazing">5 stars</label>
+            </fieldset>
+            <div class="invalid-feedback">Please provide a rating.</div>
+        </div>
+        <div class="valid-feedback">Looks good!</div>
+
             <br>
             <button type="submit" class="add-btn">Submit Review</button>
         </form>
@@ -62,7 +73,7 @@
             <% if (listing.reviews.length === 0) { %>
                 <p>No reviews yet.</p>
             <% } else { %>
-                <div class="row col-5 reviewbox ms-3 mb-3 g-2 ">
+                <div class="d-flex flex-wrap gap-3 ms-3 mb-3 reviewbox">
                 
                 <% listing.reviews.forEach(function(review) { %>
                     <div class="mb-3 card p-3">
@@ -70,7 +81,8 @@
                             <strong>By:</strong> <%= review.author ? review.author.username : "Unknown" %>
                         </div>
                         <div class="card-text">
-                            <strong>Rating:</strong> <%= review.rating %>/5
+                            
+                            <p class="starability-result" data-rating="<%= review.rating %>">Rated: <%= review.rating %> stars</p>
                             <p><%= review.comment %></p>
                         </div>
                         <form action="/listings/<%= listing._id %>/reviews/<%= review._id %>?_method=DELETE" class="mb-3" method="post">
@@ -82,6 +94,7 @@
                 </div>
             <% } %>
         </div>
+        
     </div>
 </div>
 

@@ -1,3 +1,8 @@
+if(process.env.NODE_ENV !== 'production'){
+  require('dotenv').config();
+}
+const dbUrl = process.env.ATLAS_DB_URL || "mongodb://127.0.0.1:27017/GENZHOTELS";
+
 const express = require('express');
 const app = express();
 const port = 8080;
@@ -11,15 +16,28 @@ app.engine('ejs', ejsmate);
 app.use(overwride('_method'));
 const path = require('path');
 const session = require('express-session');
+const MongoStore = require('connect-mongo');
 const flash = require('connect-flash');
 const passport = require('passport');
 const LocalStrategy = require('passport-local');
 const User = require('./models/user.js');
 const userroutes = require('./routers/user.js');
 
+const store = MongoStore.create({
+  mongoUrl: dbUrl,
+  touchAfter: 24 * 60 * 60,
+  crypto: {
+    secret: process.env.SECRET
+  }
+});
+store.on('error', function(e){
+  console.log('SESSION STORE ERROR', e);
+});
+
 
 const sessionoptions = {
-  secret: 'supersecretcode',
+  store: store,
+  secret: process.env.SECRET ,
   resave: false,
   saveUninitialized: true,
   cookie: {
@@ -28,7 +46,6 @@ const sessionoptions = {
     maxAge: 1000 * 60 * 60 * 24 * 7
   }
 };
-
 
 
 app.use(express.static(path.join(__dirname, 'public')));
@@ -52,16 +69,14 @@ app.use((req, res, next) => {
 });
 
 main()
-.then(() => console.log('Connected to MongoDB'))
+.then(() => console.log('Connected to MongoDB ATLAS'))
 .catch(err => console.log(err));
 
 async function main() {
-  await mongoose.connect('mongodb://127.0.0.1:27017/GENZHOTELS');
+  await mongoose.connect(dbUrl);
 }
 
-app.get('/', (req, res) => {
-  res.send('Welcome to GENZ HOTELS!');
-});
+
 
 
 app.use('/listings', listingroutes);

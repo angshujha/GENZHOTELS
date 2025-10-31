@@ -5,7 +5,7 @@
   <div class="row">
         <div class="col-md-8 offset-md-2">
     <h1>Create a New Listing</h1>
-    <form method="post" action="/listings" class="needs-validation" novalidate>
+    <form method="post" action="/listings" class="needs-validation" enctype="multipart/form-data" novalidate>
         <div class="mb-3">
         <label for="listing[title]" class="form-label">Title:</label>
         <input type="text" id="title" name="listing[title]" class="form-control" required>
@@ -39,12 +39,27 @@
         </div>
         <div class="valid-feedback">Looks good!</div>
         </div>
+        <div class="mb-3">
+  <label for="listing[category]" class="form-label">Category:</label>
+  <select id="category" name="listing[category]" class="form-control" required>
+    <option value="">Select category</option>
+    <option>Trending</option>
+    <option>Outdoor getaways</option>
+    <option>City stays</option>
+    <option>Cabins and cottages</option>
+    <option>Unique stays</option>
+    <option>Windmills</option>
+    <option>Amazing pools</option>
+    <option>Arctic homes</option>
+  </select>
+</div>
+        <div class="valid-feedback">Looks good!</div>
 
         <!-- Image -->
         <div class="mb-3">
-          <label for="image" class="form-label">Image URL:</label>
-          <input type="text" id="image" name="listing[image][url]" class="form-control" required>
-          <div class="invalid-feedback">Please provide an image URL.</div>
+          <label for="image" class="form-label">Image:</label>
+          <input type="file" id="image" name="listing[image]" class="form-control" accept="image/*" required>
+          <div class="invalid-feedback">Please provide an image.</div>
         </div>
         <div class="valid-feedback">Looks good!</div>
         <br>

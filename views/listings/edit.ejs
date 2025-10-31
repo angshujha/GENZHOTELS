@@ -4,7 +4,7 @@
         <div class="col-md-8 offset-md-2">
 
     <h1>Edit Listing</h1>   
-    <form method="post" action="/listings/<%= listing._id %>?_method=PUT" class="needs-validation" novalidate>
+    <form method="post" action="/listings/<%= listing._id %>?_method=PUT" class="needs-validation" enctype="multipart/form-data" novalidate>
     <div class="mb-3">
         <label for="listing[title]" class="form-label">Title:</label>
         <input type="text" id="title" name="listing[title]" class="form-control" value="<%= listing.title %>" required>
@@ -24,10 +24,35 @@
     </div>
     <div class="valid-feedback">Looks good!</div>
     <div class="mb-3">
-        <label for="image" class="form-label">Image URL:</label>
-        <input type="text" id="image" name="listing[image][url]" class="form-control" value="<%= listing.image.url %>" required>
-        <div class="invalid-feedback">Please provide an image URL.</div>
-    </div>
+  <label for="listing[category]" class="form-label">Category:</label>
+  <select id="category" name="listing[category]" class="form-select" required>
+    <option value="">Select a category</option>
+    <option value="Trending" <%= listing.category === 'Trending' ? 'selected' : '' %>>Trending</option>
+    <option value="Outdoor getaways" <%= listing.category === 'Outdoor getaways' ? 'selected' : '' %>>Outdoor getaways</option>
+    <option value="City stays" <%= listing.category === 'City stays' ? 'selected' : '' %>>City stays</option>
+    <option value="Cabins and cottages" <%= listing.category === 'Cabins and cottages' ? 'selected' : '' %>>Cabins and cottages</option>
+    <option value="Unique stays" <%= listing.category === 'Unique stays' ? 'selected' : '' %>>Unique stays</option>
+    <option value="Windmills" <%= listing.category === 'Windmills' ? 'selected' : '' %>>Windmills</option>
+    <option value="Amazing pools" <%= listing.category === 'Amazing pools' ? 'selected' : '' %>>Amazing pools</option>
+    <option value="Arctic homes" <%= listing.category === 'Arctic homes' ? 'selected' : '' %>>Arctic homes</option>
+  </select>
+  <div class="invalid-feedback">Please select a category.</div>
+</div>
+    <div class="valid-feedback">Looks good!</div>
+    <div class="mb-3">
+    <label class="form-label">Current Image:</label><br>
+    <img 
+        src="<%= listing.image && listing.image.url ? listing.image.url : 'https://via.placeholder.com/200x150?text=No+Image' %>" 
+        alt="Current Image" 
+        class="img-thumbnail mb-2" 
+        style="width: 200px; height: auto;"
+    >
+</div>
+
+<div class="mb-3">
+    <label for="image" class="form-label">Upload New Image:</label>
+    <input type="file" id="image" name="listing[image]" class="form-control" accept="image/*">
+</div>
     <div class="valid-feedback">Looks good!</div>
      <div class="row">
         <div class="mb-3 col-md-4">

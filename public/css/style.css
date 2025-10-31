@@ -107,3 +107,89 @@
     flex-direction: row !important;
     gap: 0.5rem !important;
 }
+.filters {
+  display: flex;
+  flex-wrap: nowrap;              /* Keep in one line */
+  overflow-x: auto;               /* Scroll horizontally on small screens */
+  overflow-y: hidden;
+  gap: 0.8rem;
+  padding: 10px 15px;
+  align-items: center;
+  justify-content: flex-start;
+  scrollbar-width: thin;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch; /* smooth scrolling on mobile */
+}
+
+.filters::-webkit-scrollbar {
+  height: 6px;
+}
+
+.filters::-webkit-scrollbar-thumb {
+  background-color: #ccc;
+  border-radius: 10px;
+}
+
+.filter {
+  flex: 0 0 auto;
+  text-decoration: none;
+  color: #333;
+  background-color: #fff;
+  
+ 
+  padding: 10px 14px;
+  min-width: 90px;                 /* Responsive minimum width */
+  max-width: 110px;                /* Responsive max width */
+  height: 80px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-size: 0.85rem;
+  transition: all 0.2s ease-in-out;
+ 
+}
+
+.filter:hover {
+  background-color: #f7f7f7;
+  transform: translateY(-2px);
+}
+
+.filter i {
+  font-size: 1.3rem;
+  margin-bottom: 5px;
+  color: #ff5a5f;
+}
+
+.filter.active {
+  border: 2px solid #ff5a5f;
+  background-color: #fff0f0;
+  color: #ff5a5f;
+}
+
+.tax-toggle {
+  flex: 0 0 auto;
+  margin-left: 20px;
+  white-space: nowrap;
+}
+
+/* ✅ Extra responsiveness for smaller screens */
+@media (max-width: 768px) {
+  .filter {
+    min-width: 80px;
+    max-width: 95px;
+    height: 70px;
+    font-size: 0.8rem;
+  }
+
+  .filter i {
+    font-size: 1.1rem;
+  }
+}
+
+
+.filter p{
+    font-size: 0.8rem;
+}
+
+

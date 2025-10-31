@@ -1,8 +1,76 @@
 <%layout("layout/boilerplate") -%>
-<%= success %>
+
 <body>
+  <div class="filters">
+
+  <a href="/listings?category=Trending" class="filter text-center">
+    <div><i class="fa-solid fa-fire"></i></div>
+    <p>Trending</p>
+  </a>
+
+  <a href="/listings?category=Outdoor getaways" class="filter text-center">
+    <div><i class="fa-solid fa-mountain-sun"></i></div>
+    <p>Outdoor getaways</p>
+  </a>
+
+  <a href="/listings?category=City stays" class="filter text-center">
+    <div><i class="fa-solid fa-city"></i></div>
+    <p>City stays</p>
+  </a>
+
+  <a href="/listings?category=Entire homes" class="filter text-center">
+    <div><i class="fa-solid fa-house"></i></div>
+    <p>Entire homes</p>
+  </a>
+
+  <a href="/listings?category=Amazing pools" class="filter text-center">
+    <div><i class="fa-solid fa-person-swimming"></i></div>
+    <p>Amazing pools</p>
+  </a>
+
+  <a href="/listings?category=Cabins and cottages" class="filter text-center">
+    <div><i class="fa-solid fa-tree"></i></div>
+    <p>Cabins and cottages</p>
+  </a>
+
+  <a href="/listings?category=Unique stays" class="filter text-center">
+    <div><i class="fa-solid fa-igloo"></i></div>
+    <p>Unique stays</p>
+  </a>
+
+  <a href="/listings?category=Windmills" class="filter text-center">
+    <div><i class="fa-solid fa-wind"></i></div>
+    <p>Windmills</p>
+  </a>
+  <a href="/listings?category=Arctic homes" class="filter text-center">
+    <div><i class="fa-solid fa-snowflake"></i></div>
+    <p>Arctic homes</p>
+  </a>
+  <a href="/listings" class="filter text-center">
+    <div><i class="fa-solid fa-globe"></i></div>
+    <p>All GENZ</p>
+  </a>
+  <div class="tax-toggle">
+    <div class="form-check-reverse form-switch">
+  <input class="form-check-input" type="checkbox" role="switch" id="switchCheckDefault">
+  <label class="form-check-label" for="switchCheckDefault">Display total after taxes</label>
+</div>
+  </div>
+</div>
+<% if (category) { %>
+    <div class="text-center mt-3">
+      <h5>Showing results for: <%= category %></h5>
+    </div>
+  <% } %>
+  <% if (country) { %>
+  <div class="text-center mt-2">
+    <h6>Showing results for: <%= country %></h6>
+  </div>
+<% } %>
+
+
 <div class="container my-4">
-  <div class="row row-cols-lg-3 row-cols-md-2 row-cols-sm-1 g-4">
+  <div class="row row-cols-lg-3 row-cols-md-2 row-cols-sm-1 g-4 mt-3">
     <% listings.forEach(listing => { %>
       <a href="/listings/<%= listing._id %>" class="anchor">
       <div class="col">
@@ -24,7 +92,25 @@
   </div>
 </div>
 
-
+<script>
+  const taxToggle = document.getElementById('switchCheckDefault');
+  taxToggle.addEventListener('change', () => {
+    const prices = document.querySelectorAll('.text-muted');
+    prices.forEach(priceElem => {
+      let priceText = priceElem.textContent;
+      let priceMatch = priceText.match(/Rs ([\d,]+)/);
+      if (priceMatch) {
+        let price = parseInt(priceMatch[1].replace(/,/g, ''));
+        if (taxToggle.checked) {
+          let totalPrice = Math.round(price * 1.18); // Assuming 18% tax
+          priceElem.textContent = `Rs ${totalPrice.toLocaleString("en-IN")}/night (incl. taxes)`;
+        } else {
+          priceElem.textContent = `Rs ${price.toLocaleString("en-IN")}/night`;
+        }
+      }
+    });
+  });
+</script>
     
 </body>
 </html>
