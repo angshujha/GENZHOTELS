@@ -26,6 +26,10 @@ const listingSchema = new schema({
       "Cabins and cottages",
       "Unique stays",
       "Windmills",
+      "Treehouses",
+      "Beach vacations",
+      "Ski vacations",
+      
       "Amazing pools",
       "Arctic homes"
     ],
